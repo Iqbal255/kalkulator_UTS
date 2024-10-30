@@ -1,0 +1,71 @@
+body{
+background: rgb(0, 16, 238);
+color: rgb(255, 255, 255);
+font-size: 11px;
+text-align: center;
+display: flex;
+justify-content: center;
+font-family: 'Times New Roman', Times, serif;
+font-size: medium;
+}
+
+div{
+ /* border: solid 1px red; */
+}
+
+#kalkulator{
+    border: solid 1px #ccc;
+    padding: 10px;
+    background: linear-gradient(#ccf, #88f);
+}
+.wrapper{
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.wrapper div{
+    width: 100%;
+    /* background: darkblue; */
+    padding: 5px 10px;
+}
+
+#hasil, #btn-hitung{
+    font-size: 22px;
+}
+
+#operasi.temporer{
+    font-size: 9px;
+}
+
+.bg-abu{background: #26115232;}
+.bg-red{background: #C00000;}
+.bg-dark-brown{background: #4A452A;}
+.bg-brown{background: #974807;}
+.bg-dark-blue{background: #376091;}
+.bg-purple{background: #7030A0;}
+.bg-green{background: #1100ff;}
+
+#judul{
+    padding: 10px 0;
+}
+
+.tombol{
+    border: solid 1px #ccc;
+    box-shadow: 0 0 3px gray;
+}
+
+.tombol-aktif{
+    cursor: pointer;
+    transition: .2s;
+}
+
+.tombol-aktif:hover{
+    background: linear-gradient(rgb(255, 255, 255),rgb(4, 255, 37));
+    transform: scale(1.1);
+}
+
+.tombol-nonaktif{
+    box-shadow: none !important;
+}
