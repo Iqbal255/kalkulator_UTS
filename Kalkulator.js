@@ -3,7 +3,6 @@ $(document).ready(function() {
     let historyList = $('#historyList');
     let currentInput = '';
     let operator = '';
-    let history = [];
 
     // Update display
     function updateDisplay(value) {
@@ -19,12 +18,12 @@ $(document).ready(function() {
 
     // Tambah riwayat ke daftar
     function addToHistory(expression, result) {
-        history.push({ expression, result });
         historyList.append(`<li>${expression} = ${result}</li>`);
     }
 
     // Fungsi untuk menghitung faktor
     function factorial(n) {
+        if (n < 0) return "Undefined";
         return n <= 1 ? 1 : n * factorial(n - 1);
     }
 
@@ -32,11 +31,11 @@ $(document).ready(function() {
     function calculate() {
         try {
             let result;
-            let expression = currentInput.replace('x', '*').replace('^', '**');
+            let expression = currentInput.replace(/x/g, '*').replace(/\^/g, '**');
 
-            // Menghitung ekspresi
+            // Mengecek apakah ada operator faktor
             if (operator === '!') {
-                result = factorial(parseFloat(currentInput));
+                result = factorial(parseInt(currentInput));
             } else {
                 result = eval(expression);
             }
@@ -45,10 +44,12 @@ $(document).ready(function() {
             updateDisplay(result);
             addToHistory(currentInput, result);
 
-            // Reset input
+            // Reset input setelah hitung
             currentInput = result.toString();
+            operator = '';
         } catch (error) {
             updateDisplay('Error');
+            console.error("Calculation error:", error);
         }
     }
 
@@ -64,8 +65,13 @@ $(document).ready(function() {
             operator = '!';
             calculate();
         } else {
-            currentInput += btnValue;
-            updateDisplay(currentInput);
+            if (btnValue.match(/[0-9.%+-/^]/)) {
+                currentInput += btnValue;
+                updateDisplay(currentInput);
+            } else if (btnValue === '+/-') {
+                currentInput = (-parseFloat(currentInput)).toString();
+                updateDisplay(currentInput);
+            }
         }
     });
 });
