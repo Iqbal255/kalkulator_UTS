@@ -1,107 +1,112 @@
 $(document).ready(function() {
+    const $display = $(".display");
+    const $historyList = $("#historyList");
     let currentInput = "";
-    let operator = "";
+    let operator = null;
     let previousInput = "";
-    let resultDisplayed = false;
 
-    // Function to update display
-    function updateDisplay() {
-        $('#input1').text(previousInput);
-        $('#operasi-selected').text(operator);
-        $('#input2').text(currentInput);
-    }
+    $(".button").on("click", function() {
+        const value = $(this).text();
 
-    // Function to clear all inputs
-    function clearAll() {
+        if (value === "C") {
+            clear();
+        } else if (value === "=") {
+            calculate();
+        } else if (isOperator(value)) {
+            handleOperator(value);
+        } else {
+            appendToInput(value);
+        }
+    });
+
+    function clear() {
         currentInput = "";
         previousInput = "";
-        operator = "";
-        resultDisplayed = false;
-        updateDisplay();
-        $('#hasil-temporer').text("0");
+        operator = null;
+        updateDisplay("");
     }
 
-    // Handle number button clicks
-    $('.tombol-angka').click(function() {
-        if (resultDisplayed) {
-            currentInput = "";
-            resultDisplayed = false;
+    function appendToInput(value) {
+        currentInput += value;
+        updateDisplay(currentInput);
+    }
+
+    function isOperator(value) {
+        return ["+", "-", "x", "/", "^", "%", "!", "+/-"].includes(value);
+    }
+
+    function handleOperator(value) {
+        if (currentInput === "") return;
+
+        if (previousInput !== "") {
+            calculate();
         }
-        currentInput += $(this).text().trim();
-        updateDisplay();
-    });
+        operator = value;
+        previousInput = currentInput;
+        currentInput = "";
+    }
 
-    // Handle operation button clicks
-    $('.tombol-operasi').click(function() {
-        if (currentInput === "" && previousInput === "") return;
-        if (previousInput && currentInput && operator) {
-            previousInput = calculate(previousInput, currentInput, operator).toString();
-            currentInput = "";
-        } else if (currentInput) {
-            previousInput = currentInput;
-            currentInput = "";
-        }
-        operator = $(this).text().trim();
-        updateDisplay();
-    });
+    function calculate() {
+        let result;
+        const prev = parseFloat(previousInput);
+        const curr = parseFloat(currentInput);
 
-    // Toggle negative sign
-    $('.toggle-negatif').click(function() {
-        currentInput = currentInput.startsWith("-") ? currentInput.slice(1) : "-" + currentInput;
-        updateDisplay();
-    });
+        if (isNaN(prev) || isNaN(curr)) return;
 
-    // Factorial calculation
-    $('.tombol-faktorial').click(function() {
-        if (currentInput) {
-            currentInput = factorial(parseInt(currentInput)).toString();
-            updateDisplay();
-        }
-    });
-
-    // Calculate result when "=" is pressed
-    $('#btn-hitung').click(function() {
-        if (previousInput && currentInput && operator) {
-            currentInput = calculate(previousInput, currentInput, operator).toString();
-            $('#hasil-temporer').text(currentInput);
-            operator = "";
-            previousInput = "";
-            resultDisplayed = true;
-            updateDisplay();
-        }
-    });
-
-    // Clear all inputs when "C" is pressed
-    $('.tombol-clear').click(function() {
-        clearAll();
-    });
-
-    // Function to perform calculations
-    function calculate(num1, num2, operator) {
-        num1 = parseFloat(num1);
-        num2 = parseFloat(num2);
         switch (operator) {
             case "+":
-                return num1 + num2;
+                result = prev + curr;
+                break;
             case "-":
-                return num1 - num2;
+                result = prev - curr;
+                break;
             case "x":
-                return num1 * num2;
+                result = prev * curr;
+                break;
             case "/":
-                return num2 !== 0 ? num1 / num2 : "Error";
-            case "%":
-                return num1 % num2;
+                result = prev / curr;
+                break;
             case "^":
-                return Math.pow(num1, num2);
+                result = Math.pow(prev, curr);
+                break;
+            case "%":
+                result = prev % curr;
+                break;
+            case "!":
+                result = factorial(prev);
+                break;
+            case "+/-":
+                result = -curr;
+                break;
             default:
-                return 0;
+                return;
         }
+
+        updateDisplay(result);
+        addToHistory(`${previousInput} ${operator} ${currentInput} = ${result}`);
+        currentInput = "";
+        previousInput = result;
     }
 
-    // Factorial function
-    function factorial(n) {
-        if (n < 0) return "NaN";
-        if (n === 0 || n === 1) return 1;
-        return n * factorial(n - 1);
+    function updateDisplay(value) {
+        $display.val(value);
+    }
+
+    function addToHistory(entry) {
+        // Mengecek jika jumlah riwayat sudah mencapai 5
+        if ($historyList.children().length >= 5) {
+            // Menghapus semua riwayat
+            $historyList.empty();
+        }
+
+        // Menambahkan entri baru ke riwayat
+        const $listItem = $("<li>").text(entry);
+        $historyList.append($listItem);
+    }
+
+    function factorial(num) {
+        if (num < 0) return undefined;
+        if (num === 0 || num === 1) return 1;
+        return num * factorial(num - 1);
     }
 });
