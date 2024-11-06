@@ -12,6 +12,8 @@ $(document).ready(function() {
             clear();
         } else if (value === "=") {
             calculate();
+        } else if (value === "+/-") {
+            toggleSign();
         } else if (isOperator(value)) {
             handleOperator(value);
         } else {
@@ -32,7 +34,7 @@ $(document).ready(function() {
     }
 
     function isOperator(value) {
-        return ["+", "-", "x", "/", "^", "%", "!", "+/-"].includes(value);
+        return ["+", "-", "x", "/", "^", "%", "!"].includes(value);
     }
 
     function handleOperator(value) {
@@ -75,9 +77,6 @@ $(document).ready(function() {
             case "!":
                 result = factorial(prev);
                 break;
-            case "+/-":
-                result = -curr;
-                break;
             default:
                 return;
         }
@@ -86,6 +85,14 @@ $(document).ready(function() {
         addToHistory(`${previousInput} ${operator} ${currentInput} = ${result}`);
         currentInput = "";
         previousInput = result;
+    }
+
+    function toggleSign() {
+        if (currentInput !== "") {
+            // Membalikkan tanda dari currentInput
+            currentInput = (parseFloat(currentInput) * -1).toString();
+            updateDisplay(currentInput);
+        }
     }
 
     function updateDisplay(value) {
